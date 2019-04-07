@@ -113,22 +113,18 @@ Keyboard Attributes
 	endmodule
 	
 	
-//TODO implement bit-by-bit streaming instead of packet based masseges
+//TODO implement bit-by-bit streaming instead of packet based masseges (needed?)
 	
 //TODO request_transfer module (send and recieve seperately: basically an interrupt to the keyboard)
 
 //TODO forward_packet module (send the pocket to the port)>>> this might not be needed if we can define ports directly
 	
 //TODO polling module (check keybouard state and evaluate it:should the fpga send or recieve anything)
-	
-//TODO decoder module 
 
-//TODO encoder module
-
-//TODO init_sequence module (?)
 
 
 
 	
+
 	
 
