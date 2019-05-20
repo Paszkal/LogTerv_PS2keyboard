@@ -54,7 +54,7 @@ Keyboard Keyboard_top (
 	.PS2_CLK(PS2_CLK), 
 	.PS2_DATA(PS2_DATA),
 	//.SEG(SEG),
-	.DISP(DISP),
+	.DISP(temp),
 	.LED(led_temp)
 );
 	
@@ -67,7 +67,7 @@ Keyboard Keyboard_top (
 	.dig2(placeholder2),
 	.dig3(placeholder3),
 	
-	.disp(temp),
+	.disp(DISP),
 	.seg(SEG)
 );
 	
