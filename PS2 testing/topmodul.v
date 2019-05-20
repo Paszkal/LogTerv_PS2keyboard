@@ -18,7 +18,8 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module wrapper(
+module topmodule(
+	input RST,
 	input CLK,		//board clock signal
 	input PS2_CLK,		//keyboard clock signal
 	input PS2_DATA,	
@@ -26,12 +27,50 @@ module wrapper(
 	output [6:0] SEG,	
 	output [3:0] DISP
     );
-Keyboard TestingKeyboard (
-							.CLK(CLK),
-							.PS2_CLK(PS2_CLK), 
-							.PS2_DATA(PS2_DATA),
-							.SEG(SEG),
-							.DISP(DISP),
-							.LED(LED)
-							);
+	reg [4:0] data_in;
+	reg [4:0] placeholder1;
+	reg [4:0] placeholder2;
+	reg [4:0] placeholder3;
+	reg [3:0] temp;
+	reg [7:0] led_temp;
+	
+	always@(posedge CLK)
+	begin
+		if(RST)
+		begin
+			data_in<=5'b10000;
+			placeholder1<=5'b10000;
+			placeholder2<=5'b10000;
+			placeholder3<=5'b10000;
+		end
+		else
+			data_in<=5'b00000+led_temp[7:4];
+	end
+	
+	
+Keyboard Keyboard_top (
+	.CLK(CLK),
+	.RST(RST),
+	.PS2_CLK(PS2_CLK), 
+	.PS2_DATA(PS2_DATA),
+	//.SEG(SEG),
+	.DISP(DISP),
+	.LED(led_temp)
+);
+	
+7seg 7seg_top(	
+	.clk(CLK),
+	.rst(RST),
+	
+	.dig0(data_in),
+	.dig1(placehodler1),
+	.dig2(placeholder2),
+	.dig3(placeholder3),
+	
+	.disp(temp),
+	.seg(SEG)
+);
+	
+assign LED=led_temp;
+	
 endmodule
