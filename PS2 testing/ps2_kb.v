@@ -29,7 +29,7 @@ module Keyboard(
    //output reg TRIG_ARR,
    //output reg [7:0]CODEWORD,
    output reg [3:0] DISP,
-   output reg [6:0] SEG,	
+   //output reg [6:0] SEG,	
    output reg [7:0] LED //ez mûködik, csak a felengedésnél csak villodzik, szóval azt az értéket nem tartja
    );
    
@@ -71,7 +71,7 @@ module Keyboard(
 		DISPLAY =0;
 		read = 0;
 		count_reading = 0;
-		DISP =4'b1000;
+		DISP =4'b1111;
 	end
 
 	always @(posedge CLK) begin				//This reduces the frequency 250 times
