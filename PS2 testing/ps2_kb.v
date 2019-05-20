@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module Keyboard(
    input CLK,	//board clock
+   input RST,
    input PS2_CLK,	//keyboard clock and data signals
    input PS2_DATA,
    //output reg scan_err,			//These can be used if the Keyboard module is used within a another module
@@ -73,6 +74,26 @@ module Keyboard(
 		count_reading = 0;
 		DISP =4'b1111;
 	end
+	
+	always @(posedge CLK) //handling reset
+	begin
+		if(RST)
+		begin
+			PREVIOUS_STATE = 1;		
+			scan_err = 0;		
+			scan_code = 0;
+			COUNT = 0;			
+			CODEWORD = 0;
+			CODEWORD_DISP=0;
+			SEG = 0;
+			LED =0;
+			DISPLAY =0;
+			read = 0;
+			count_reading = 0;
+			DISP =4'b1111;
+		end
+	end
+	
 
 	always @(posedge CLK) begin				//This reduces the frequency 250 times
 		if (DOWNCOUNTER < 249) begin			//and uses variable TRIGGER as the new board clock 
