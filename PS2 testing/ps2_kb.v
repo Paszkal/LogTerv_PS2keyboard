@@ -1,36 +1,10 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: Montvydas Klumbys	
-// 
-// Create Date:    
-// Design Name: 
-// Module Name:    Keyboard 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//	A module which is used to receive the DATA from PS2 type keyboard and translate that data into sensible codeword.
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+
 module Keyboard(
    input CLK,	//board clock
    input RST,
    input PS2_CLK,	//keyboard clock and data signals
-   input PS2_DATA,
-   //output reg scan_err,			//These can be used if the Keyboard module is used within a another module
-   //output reg [10:0] scan_code,
-   //output reg [3:0]COUNT,
-   //output reg TRIG_ARR,
-   //output reg [7:0]CODEWORD,
-   output reg [3:0] DISP,
-   //output reg [6:0] SEG,	
+   input PS2_DATA,	
    output reg [7:0] LED //ez mûködik, csak a felengedésnél csak villodzik, szóval azt az értéket nem tartja
    );
    
@@ -44,8 +18,6 @@ module Keyboard(
 	wire [7:0] ERROR =8'hFC; //ha hiba van -> itt resetelni kell
 	wire [7:0] OKAY  =8'hAA; // minden okés 
 	reg [3:0] DISPLAY;
-	//wire [7:0] EXTENDED = 8'hE0;	//codes 
-	//wire [7:0] RELEASED = 8'hF0;
    
 	reg read;				//this is 1 if still waits to receive more bits 
 	reg [11:0] count_reading;		//this is used to detect how much time passed since it received the previous codeword
@@ -72,7 +44,6 @@ module Keyboard(
 		DISPLAY =0;
 		read = 0;
 		count_reading = 0;
-		DISP =4'b1111;
 	end
 	
 	always @(posedge CLK) //handling reset
@@ -90,7 +61,6 @@ module Keyboard(
 			DISPLAY =0;
 			read = 0;
 			count_reading = 0;
-			DISP =4'b1111;
 		end
 	end
 	
@@ -111,7 +81,8 @@ module Keyboard(
 	always @(posedge CLK)
 		if(!RST)
 		begin	
-			if (TRIGGER) begin
+			if (TRIGGER) 
+			begin
 				if (read)				//if it still waits to read full packet of 11 bits, then (read == 1)
 					count_reading <= count_reading + 1;	//and it counts up this variable
 				else 						//and later if check to see how big this value is.
@@ -175,87 +146,8 @@ module Keyboard(
 	
 	always @(posedge CLK) 
 		if(!RST)
-		begin
-			if (TRIGGER) begin
-			  if (TRIG_ARR) begin
-				LED <= scan_code[8:1];
-    			//You can put the code on the LEDs if you want to, thatâ€™s up to you 
-		/*if (CODEWORD == ARROW_UP)				//if the CODEWORD has the same code as the ARROW_UP code
-			SEG <= 6'b110011;					//count up the LED register to light up LEDs
-		else if (CODEWORD == ARROW_DOWN)			//or if the ARROW_DOWN was pressed, then
-			SEG<= 6'b000011;
-			*/
-	    //if (scan_code[8:1] != OKAY  || scan_code[8:1] !=ERROR )
-	   // begin
-		//if(scan_code[8:5] == 4'h0)   SEG <=7'b1111111;
-		/*else if(DISPLAY  == 4'h2) SEG <=7'b0100100;
-        else if(DISPLAY  == 4'h3) SEG <=7'b0001111;
-        else if(DISPLAY == 4'h4) SEG <= 7'b0011001;
-        else if (DISPLAY == 4'h5) SEG <= 7'b0010010;
-        else if (DISPLAY == 4'h6) SEG <= 7'b0000010;
-        else if (DISPLAY== 4'h7) SEG <= 7'b1111000;
-        else if (DISPLAY  == 4'h8) SEG <= 7'b0000000; 
-        else if  (DISPLAY == 4'h9) SEG <= 7'b0010000;
-        else if(DISPLAY == 4'hA) SEG <= 7'b0001000;
-        else if (DISPLAY == 4'hB) SEG <=7'b0000011;
-        else if (DISPLAY == 4'hC) SEG <=7'b1000110; 
-        else if (DISPLAY == 4'hD) SEG <=7'b100001;
-        else if (DISPLAY  == 4'hE) SEG <=7'b0000110;
-        else if (DISPLAY == 4'hF) SEG <=7'b0001110;
-        
-        end*/
-       
-			//count down LED register 
-			//if (CODEWORD == EXTENDED)			//For example you can check here if specific codewords were received
-			//if (CODEWORD == RELEASED)
-	
-
-			   end
-			end
-		end
+			if (TRIGGER) 
+			  if (TRIG_ARR) 
+				  LED <= scan_code[8:1];
 
 endmodule
-
-
-
-//This code didnâ€™t work very well, but it was the first implementation of the moduleâ€¦ Maybe you can learn something from it
-/*
-	always @(negedge PS2_CLK) begin
-		read <= 1;
-		scan_err <= 0;
-		scan_code[10:0] <= {PS2_DATA, scan_code[10:1]};
-		if (COUNT < 11)
-			COUNT <= COUNT + 1;
-		else if (COUNT == 11) begin
-			COUNT <= 0;
-			read <= 0;
-			//calculate scan_err
-			if (!scan_code[10] || scan_code[0] || !(scan_code[1]^scan_code[2]^scan_code[3]^scan_code[4]
-				^scan_code[5]^scan_code[6]^scan_code[7]^scan_code[8]
-				^scan_code[9]))
-				scan_err <= 1;
-			else 
-				scan_err <= 0;
-		end 
-		else begin
-	
-			if (COUNT < 11 && count_reading >= 1000000) begin
-				COUNT <= 0;
-				read <= 0;
-			end
-		end
-
-	end
-
-	always@(posedge CLK) begin
-		if (COUNT != PREVIOUS_STATE) begin
-			if (COUNT == 11) begin
-				TRIG_ARR <= 1;
-			end
-			else begin
-				TRIG_ARR <= 0;
-			end
-		end
-		PREVIOUS_STATE <= COUNT;
-	end
-*/
