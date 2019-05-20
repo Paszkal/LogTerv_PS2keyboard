@@ -30,7 +30,7 @@ module Keyboard(
    //output reg [7:0]CODEWORD,
    output reg [3:0] DISP,
    output reg [6:0] SEG,	
-   output reg [7:0] LED //ez m�k�dik, csak a felenged�sn�l csak villodzik, sz�val azt az �rt�ket nem tartja
+   output reg [7:0] LED //ez mûködik, csak a felengedésnél csak villodzik, szóval azt az értéket nem tartja
    );
    
    //Buttons 
@@ -39,9 +39,9 @@ module Keyboard(
 	wire [7:0] ARROW_LEFT = 8'h6B;
 	wire [7:0] ARROW_RIGHT = 8'h74;
 	wire [7:0] FIRST = 8'h16; //#1 gomb
-	//Ezekb�l az egyik k�d j�n ha bootol a billenty�zet, nagy probl�ma nincs bel�le
+	//Ezekbõl az egyik kód jön ha bootol a billentyüzet, nagy probléma nincs belõle
 	wire [7:0] ERROR =8'hFC; //ha hiba van -> itt resetelni kell
-	wire [7:0] OKAY  =8'hAA; // minden ok�s 
+	wire [7:0] OKAY  =8'hAA; // minden okés 
 	reg [3:0] DISPLAY;
 	//wire [7:0] EXTENDED = 8'hE0;	//codes 
 	//wire [7:0] RELEASED = 8'hF0;
@@ -138,17 +138,17 @@ module Keyboard(
 				else begin
 					CODEWORD <= scan_code[8:1];	//else drop down the unnecessary  bits and transport the 7 DATA bits to CODEWORD reg
 				end				//notice, that the codeword is also reversed! This is because the first bit to received
-			end					//is supposed to be the last bit in the codeword…
+			end					//is supposed to be the last bit in the codewordâ€¦
 			else CODEWORD <= 8'd0;				//not a full packet received, thus reset codeword
 		end
-		else CODEWORD <= 8'd0;					//no clock trigger, no data…
+		else CODEWORD <= 8'd0;					//no clock trigger, no dataâ€¦
 	end
 	
 	always @(posedge CLK) begin
 if (TRIGGER) begin
   if (TRIG_ARR) begin
     	LED <= scan_code[8:1];
-    			//You can put the code on the LEDs if you want to, that’s up to you 
+    			//You can put the code on the LEDs if you want to, thatâ€™s up to you 
 		/*if (CODEWORD == ARROW_UP)				//if the CODEWORD has the same code as the ARROW_UP code
 			SEG <= 6'b110011;					//count up the LED register to light up LEDs
 		else if (CODEWORD == ARROW_DOWN)			//or if the ARROW_DOWN was pressed, then
@@ -187,7 +187,7 @@ endmodule
 
 
 
-//This code didn’t work very well, but it was the first implementation of the module… Maybe you can learn something from it
+//This code didnâ€™t work very well, but it was the first implementation of the moduleâ€¦ Maybe you can learn something from it
 /*
 	always @(negedge PS2_CLK) begin
 		read <= 1;
