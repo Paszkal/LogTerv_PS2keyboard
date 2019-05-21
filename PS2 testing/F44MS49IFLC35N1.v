@@ -42,9 +42,9 @@ module Keyboard(
 	//Ezekbõl az egyik kód jön ha bootol a billentyüzet, nagy probléma nincs belõle
 	wire [7:0] ERROR =8'hFC; //ha hiba van -> itt resetelni kell
 	wire [7:0] OKAY  =8'hAA; // minden okés 
-	reg [3:0] DISPLAY;
-	//wire [7:0] EXTENDED = 8'hE0;	//codes 
-	//wire [7:0] RELEASED = 8'hF0;
+	//reg [3:0] scan_code[8:5];
+	wire [7:0] EXTENDED = 8'hE0;	//codes 
+	wire [7:0] RELEASED = 8'hF0;
    
 	reg read;				//this is 1 if still waits to receive more bits 
 	reg [11:0] count_reading;		//this is used to detect how much time passed since it received the previous codeword
@@ -68,7 +68,6 @@ module Keyboard(
 		CODEWORD_DISP=0;
 		SEG = 0;
 		LED =0;
-		DISPLAY =0;
 		read = 0;
 		count_reading = 0;
 		DISP =4'b1000;
@@ -156,24 +155,26 @@ if (TRIGGER) begin
 			SEG<= 6'b000011;
 			*/
 	    //if (scan_code[8:1] != OKAY  || scan_code[8:1] !=ERROR )
-	   // begin
-		//if(scan_code[8:5] == 4'h0)   SEG <=7'b1111111;
-		/*else if(DISPLAY  == 4'h2) SEG <=7'b0100100;
-        else if(DISPLAY  == 4'h3) SEG <=7'b0001111;
-        else if(DISPLAY == 4'h4) SEG <= 7'b0011001;
-        else if (DISPLAY == 4'h5) SEG <= 7'b0010010;
-        else if (DISPLAY == 4'h6) SEG <= 7'b0000010;
-        else if (DISPLAY== 4'h7) SEG <= 7'b1111000;
-        else if (DISPLAY  == 4'h8) SEG <= 7'b0000000; 
-        else if  (DISPLAY == 4'h9) SEG <= 7'b0010000;
-        else if(DISPLAY == 4'hA) SEG <= 7'b0001000;
-        else if (DISPLAY == 4'hB) SEG <=7'b0000011;
-        else if (DISPLAY == 4'hC) SEG <=7'b1000110; 
-        else if (DISPLAY == 4'hD) SEG <=7'b100001;
-        else if (DISPLAY  == 4'hE) SEG <=7'b0000110;
-        else if (DISPLAY == 4'hF) SEG <=7'b0001110;
-        
-        end*/
+	    if(scan_code[8:1] == EXTENDED|| scan_code[8:1] == RELEASED)  SEG <= SEG;
+	    else
+	    begin
+		if(scan_code[8:5] == 4'h0)   SEG <= 0;
+		else if(scan_code[8:5] == 4'h1)  SEG <= 7'b0000110; //7'b1111001
+		else if(scan_code[8:5]  == 4'h2) SEG <=7'b1011011;  //7'b0100100
+        else if(scan_code[8:5]  == 4'h3) SEG <=7'b1001111;  //7'b0110000
+        else if(scan_code[8:5] == 4'h4) SEG <= 7'b1100110;  //7'b0011001;
+        else if (scan_code[8:5] == 4'h5) SEG <= 7'b1101101; //7'b0010010;
+        else if (scan_code[8:5] == 4'h6) SEG <= 7'b1111101;
+        else if (scan_code[8:5]== 4'h7) SEG <= 7'b0000111;
+        else if (scan_code[8:5]  == 4'h8) SEG <= 7'b1111111; 
+        else if  (scan_code[8:5] == 4'h9) SEG <= 7'b1101111;
+        else if(scan_code[8:5] == 4'hA) SEG <= 7'b1110111;
+        else if (scan_code[8:5] == 4'hB) SEG <=7'b1111100;
+        else if (scan_code[8:5] == 4'hC) SEG <=7'b0111001; 
+        else if (scan_code[8:5] == 4'hD) SEG <=7'b011110;
+        else if (scan_code[8:5]  == 4'hE) SEG <=7'b1111001;
+        else if (scan_code[8:5] == 4'hF) SEG <=7'b1110001;
+        end
        
 			//count down LED register 
 			//if (CODEWORD == EXTENDED)			//For example you can check here if specific codewords were received
