@@ -21,7 +21,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 module Keyboard(
    input CLK,	//board clock
-   input RST,
    input PS2_CLK,	//keyboard clock and data signals
    input PS2_DATA,
    //output reg scan_err,			//These can be used if the Keyboard module is used within a another module
@@ -30,8 +29,8 @@ module Keyboard(
    //output reg TRIG_ARR,
    //output reg [7:0]CODEWORD,
    output reg [3:0] DISP,
-   //output reg [6:0] SEG,	
-   output reg [7:0] LED //ez mûködik, csak a felengedésnél csak villodzik, szóval azt az értéket nem tartja
+   output reg [6:0] SEG,	
+   output reg [7:0] LED //ez m�k�dik, csak a felenged�sn�l csak villodzik, sz�val azt az �rt�ket nem tartja
    );
    
    //Buttons 
@@ -40,9 +39,9 @@ module Keyboard(
 	wire [7:0] ARROW_LEFT = 8'h6B;
 	wire [7:0] ARROW_RIGHT = 8'h74;
 	wire [7:0] FIRST = 8'h16; //#1 gomb
-	//Ezekbõl az egyik kód jön ha bootol a billentyüzet, nagy probléma nincs belõle
+	//Ezekb�l az egyik k�d j�n ha bootol a billenty�zet, nagy probl�ma nincs bel�le
 	wire [7:0] ERROR =8'hFC; //ha hiba van -> itt resetelni kell
-	wire [7:0] OKAY  =8'hAA; // minden okés 
+	wire [7:0] OKAY  =8'hAA; // minden ok�s 
 	reg [3:0] DISPLAY;
 	//wire [7:0] EXTENDED = 8'hE0;	//codes 
 	//wire [7:0] RELEASED = 8'hF0;
@@ -72,114 +71,85 @@ module Keyboard(
 		DISPLAY =0;
 		read = 0;
 		count_reading = 0;
-		DISP =4'b1111;
+		DISP =4'b1000;
 	end
-	
-	always @(posedge CLK) //handling reset
-	begin
-		if(RST)
-		begin
-			PREVIOUS_STATE = 1;		
-			scan_err = 0;		
-			scan_code = 0;
-			COUNT = 0;			
-			CODEWORD = 0;
-			CODEWORD_DISP=0;
-			SEG = 0;
-			LED =0;
-			DISPLAY =0;
-			read = 0;
-			count_reading = 0;
-			DISP =4'b1111;
+
+	always @(posedge CLK) begin				//This reduces the frequency 250 times
+		if (DOWNCOUNTER < 249) begin			//and uses variable TRIGGER as the new board clock 
+			DOWNCOUNTER <= DOWNCOUNTER + 1;
+			TRIGGER <= 0;
+		end
+		else begin
+			DOWNCOUNTER <= 0;
+			TRIGGER <= 1;
 		end
 	end
 	
+	always @(posedge CLK) begin	
+		if (TRIGGER) begin
+			if (read)				//if it still waits to read full packet of 11 bits, then (read == 1)
+				count_reading <= count_reading + 1;	//and it counts up this variable
+			else 						//and later if check to see how big this value is.
+				count_reading <= 0;			//if it is too big, then it resets the received data
+		end
+	end
 
-	always @(posedge CLK)
-		if(!RST)
-		begin							//This reduces the frequency 250 times
-			if (DOWNCOUNTER < 249) begin			//and uses variable TRIGGER as the new board clock 
-				DOWNCOUNTER <= DOWNCOUNTER + 1;
-				TRIGGER <= 0;
-			end
-			else begin
-				DOWNCOUNTER <= 0;
-				TRIGGER <= 1;
+
+	always @(posedge CLK) begin		
+	if (TRIGGER) begin						//If the down counter (CLK/250) is ready
+		if (PS2_CLK != PREVIOUS_STATE) begin			//if the state of Clock pin changed from previous state
+			if (!PS2_CLK) begin				//and if the keyboard clock is at falling edge
+				read <= 1;				//mark down that it is still reading for the next bit
+				scan_err <= 0;				//no errors
+				scan_code[10:0] <= {PS2_DATA, scan_code[10:1]};	//add up the data received by shifting bits and adding one new bit
+				COUNT <= COUNT + 1;			//
 			end
 		end
-	
-	always @(posedge CLK)
-		if(!RST)
-		begin	
-			if (TRIGGER) begin
-				if (read)				//if it still waits to read full packet of 11 bits, then (read == 1)
-					count_reading <= count_reading + 1;	//and it counts up this variable
-				else 						//and later if check to see how big this value is.
-					count_reading <= 0;			//if it is too big, then it resets the received data
+		else if (COUNT == 11) begin				//if it already received 11 bits
+			COUNT <= 0;
+			read <= 0;					//mark down that reading stopped
+			TRIG_ARR <= 1;					//trigger out that the full pack of 11bits was received
+			//calculate scan_err using parity bit
+			if (!scan_code[10] || scan_code[0] || !(scan_code[1]^scan_code[2]^scan_code[3]^scan_code[4]
+				^scan_code[5]^scan_code[6]^scan_code[7]^scan_code[8]
+				^scan_code[9]))
+				scan_err <= 1;
+			else 
+				scan_err <= 0;
+		end	
+		else  begin						//if it yet not received full pack of 11 bits
+			TRIG_ARR <= 0;					//tell that the packet of 11bits was not received yet
+			if (COUNT < 11 && count_reading >= 4000) begin	//and if after a certain time no more bits were received, then
+				COUNT <= 0;				//reset the number of bits received
+				read <= 0;				//and wait for the next packet
 			end
 		end
+	PREVIOUS_STATE <= PS2_CLK;					//mark down the previous state of the keyboard clock
+	end
+	end
 
 
-	always @(posedge CLK) 
-		if(!RST)
-		begin		
-			if (TRIGGER) begin						//If the down counter (CLK/250) is ready
-				if (PS2_CLK != PREVIOUS_STATE) begin			//if the state of Clock pin changed from previous state
-					if (!PS2_CLK) begin				//and if the keyboard clock is at falling edge
-						read <= 1;				//mark down that it is still reading for the next bit
-						scan_err <= 0;				//no errors
-						scan_code[10:0] <= {PS2_DATA, scan_code[10:1]};	//add up the data received by shifting bits and adding one new bit
-						COUNT <= COUNT + 1;			//
-					end
+	always @(posedge CLK) begin
+		if (TRIGGER) begin					//if the 250 times slower than board clock triggers
+			if (TRIG_ARR) begin				//and if a full packet of 11 bits was received
+				if (scan_err) begin			//BUT if the packet was NOT OK
+					CODEWORD <= 8'd0;		//then reset the codeword register
 				end
-				else if (COUNT == 11) begin				//if it already received 11 bits
-					COUNT <= 0;
-					read <= 0;					//mark down that reading stopped
-					TRIG_ARR <= 1;					//trigger out that the full pack of 11bits was received
-					//calculate scan_err using parity bit
-					if (!scan_code[10] || scan_code[0] || !(scan_code[1]^scan_code[2]^scan_code[3]^scan_code[4]
-						^scan_code[5]^scan_code[6]^scan_code[7]^scan_code[8]
-						^scan_code[9]))
-						scan_err <= 1;
-					else 
-						scan_err <= 0;
-				end	
-				else  begin						//if it yet not received full pack of 11 bits
-					TRIG_ARR <= 0;					//tell that the packet of 11bits was not received yet
-					if (COUNT < 11 && count_reading >= 4000) begin	//and if after a certain time no more bits were received, then
-						COUNT <= 0;				//reset the number of bits received
-						read <= 0;				//and wait for the next packet
-					end
-				end
-			PREVIOUS_STATE <= PS2_CLK;					//mark down the previous state of the keyboard clock
-			end
-			end
-
-
-	always @(posedge CLK) 
-		if(!RST)
-		begin
-			if (TRIGGER) begin					//if the 250 times slower than board clock triggers
-				if (TRIG_ARR) begin				//and if a full packet of 11 bits was received
-					if (scan_err) begin			//BUT if the packet was NOT OK
-						CODEWORD <= 8'd0;		//then reset the codeword register
-					end
-					else begin
-						CODEWORD <= scan_code[8:1];	//else drop down the unnecessary  bits and transport the 7 DATA bits to CODEWORD reg
-					end				//notice, that the codeword is also reversed! This is because the first bit to received
-				end					//is supposed to be the last bit in the codewordâ€¦
-				else CODEWORD <= 8'd0;				//not a full packet received, thus reset codeword
-			end
-			else CODEWORD <= 8'd0;					//no clock trigger, no dataâ€¦
+				else begin
+					CODEWORD <= scan_code[8:1];
+											//else drop down the unnecessary  bits and transport the 7 DATA bits to CODEWORD reg
+				end				//notice, that the codeword is also reversed! This is because the first bit to received
+			end					//is supposed to be the last bit in the codeword…
+			else CODEWORD <= 8'd0;				//not a full packet received, thus reset codeword
 		end
+		else CODEWORD <= 8'd0;					//no clock trigger, no data…
+	end
 	
-	always @(posedge CLK) 
-		if(!RST)
-		begin
-			if (TRIGGER) begin
-			  if (TRIG_ARR) begin
-				LED <= scan_code[8:1];
-    			//You can put the code on the LEDs if you want to, thatâ€™s up to you 
+	always @(posedge CLK) begin
+if (TRIGGER) begin
+  if (TRIG_ARR) begin
+    	LED <= scan_code[8:1];
+    			//You can put the code on the LEDs if you want to, that’s up to you 
 		/*if (CODEWORD == ARROW_UP)				//if the CODEWORD has the same code as the ARROW_UP code
 			SEG <= 6'b110011;					//count up the LED register to light up LEDs
 		else if (CODEWORD == ARROW_DOWN)			//or if the ARROW_DOWN was pressed, then
@@ -210,15 +180,15 @@ module Keyboard(
 			//if (CODEWORD == RELEASED)
 	
 
-			   end
-			end
-		end
+ end
+ end
+	end
 
 endmodule
 
 
 
-//This code didnâ€™t work very well, but it was the first implementation of the moduleâ€¦ Maybe you can learn something from it
+//This code didn’t work very well, but it was the first implementation of the module… Maybe you can learn something from it
 /*
 	always @(negedge PS2_CLK) begin
 		read <= 1;
