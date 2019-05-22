@@ -1,27 +1,5 @@
 `timescale 1ns / 1ps
 
-////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer:
-//
-// Create Date:   17:25:08 10/24/2014
-// Design Name:   Keyboard
-// Module Name:   /home/s1349598/Keyboard/TestingKeyboard.v
-// Project Name:  Keyboard
-// Target Device:  
-// Tool versions:  
-// Description: 
-//
-// Verilog Test Fixture created by ISE for module: Keyboard
-//
-// Dependencies:
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-////////////////////////////////////////////////////////////////////////////////
-
 module TestingKeyboard;
 
 	// Inputs
