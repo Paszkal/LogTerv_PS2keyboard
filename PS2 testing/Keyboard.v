@@ -170,7 +170,7 @@ endmodule
 
 
 
-//This code didnâ€™t work very well, but it was the first implementation of the moduleâ€¦ Maybe you can learn something from it
+//This code didnâ€™t work very well, but it was the first implementation of the moduleâ
 /*
 	always @(negedge PS2_CLK) begin
 		read <= 1;
