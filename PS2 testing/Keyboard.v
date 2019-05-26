@@ -5,8 +5,11 @@ module Keyboard(
    input PS2_DATA, //bejövõ adat
    output reg [3:0] DISP,
    output reg [6:0] SEG,	
-   output reg [7:0] LED // debug-ra kell
+   output reg [7:0] LED, // debug-ra kell
+   output transfer_finish,
+   output [10:0] code_out
    );
+   
    
    // Fontosabb gombok
 	wire [7:0] FIRST = 8'h16; //#1 gomb
@@ -38,16 +41,9 @@ module Keyboard(
 	end
 
      // órajel leosztás
-	always @(posedge CLK) begin	
-		if (down_cntr < 249) begin
-			down_cntr <= down_cntr + 1;
-			TRIGGER <= 0;
-		end
-		else begin
-			down_cntr <= 0;
-			TRIGGER <= 1;
-		end
-	end
+     always@(posedge CLK)
+     TRIGGER<=PS2_CLK;
+     
 	// számolja a bejövõ biteket
 	always @(posedge CLK) begin	
 		if (TRIGGER) begin
@@ -86,7 +82,7 @@ module Keyboard(
 		end	
 		// ha még nem jött meg a 11 bit
 		else  begin						
-			packet_recieved <= 0;				A
+			packet_recieved <= 0;			
 			if (counter < 11 && count_reading >= 4000) begin	
 				counter <= 0;				
 				waiting <= 0;				
@@ -96,6 +92,10 @@ module Keyboard(
 	last_state <= PS2_CLK;					
 	end
 	end
+	
+		assign transfer_finish=packet_recieved;
+		assign code_out=code;
+	
 	always @(posedge CLK) begin
 if (TRIGGER) begin
   if (packet_recieved) begin

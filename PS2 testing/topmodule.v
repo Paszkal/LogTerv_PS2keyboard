@@ -5,7 +5,9 @@ module topmodule(
 	input PS2_DATA,	
 	output [7:0] LED,	//debug-ra kimenet
 	output [6:0] SEG,	
-	output [3:0] DISP
+	output [3:0] DISP,
+	output transfer_finish,
+	output code_out
     );
 Keyboard TestingKeyboard (
 							.CLK(CLK),
@@ -13,6 +15,8 @@ Keyboard TestingKeyboard (
 							.PS2_DATA(PS2_DATA),
 							.SEG(SEG),
 							.DISP(DISP),
-							.LED(LED)
+							.LED(LED),
+							.transfer_finish(transfer_finish),
+							.code_out(code_out)
 							);
 endmodule
