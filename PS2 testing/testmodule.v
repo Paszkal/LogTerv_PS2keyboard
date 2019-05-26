@@ -82,95 +82,50 @@ module TestingKeyboard;
         #5 PS2_CLK = 0;
         #50 PS2_CLK = 1;
         
-        
         #45 PS2_DATA = 0; //START 0
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //1
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //2
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 0; //1
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 0; //2
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
 
-		#45 PS2_DATA = 1; //3
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //4
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //5
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
+        #45 PS2_DATA = 0; //3
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 0; //4
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 1; //5
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
 
-		#45 PS2_DATA = 1; //6
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //7
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //8
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //PARITY 9
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1;// STOP 10
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		// Add stimulus here
-		
-		#45 PS2_DATA = 0; //START 0
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //1
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //2
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-
-		#45 PS2_DATA = 0; //3
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 0; //4
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //5
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-
-		#45 PS2_DATA = 1; //6
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //7
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //8
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1; //PARITY 9
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
-		
-		#45 PS2_DATA = 1;// STOP 10
-		#5 PS2_CLK = 0;
-		#50 PS2_CLK = 1;
+        #45 PS2_DATA = 1; //6
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 1; //7
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 1; //8
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 1; //PARITY 9
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
+        #45 PS2_DATA = 1;// STOP 10
+        #5 PS2_CLK = 0;
+        #50 PS2_CLK = 1;
+        
 	//BRAKE CODE
 	end
 	

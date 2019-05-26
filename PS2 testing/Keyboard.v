@@ -98,7 +98,7 @@ module Keyboard(
 	
 	always @(posedge CLK) begin
 if (TRIGGER) begin
-  if (packet_recieved) begin
+  if (packet_recieved && errors==0) begin
     	LED <= code[8:1];
 	    if(code[8:1] == EXTENDED|| code[8:1] == RELEASED)  SEG <= SEG;
 	    else
